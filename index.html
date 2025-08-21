@@ -1,327 +1,259 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1" />
-  <title>AthleteMatch – Demo</title>
-  <style>
-    :root {
-      --bg: #eef3f8;
-      --card: #ffffff;
-      --text: #0f172a;
-      --muted: #475569;
-      --accent: #0ea5e9;
-      --like: #22c55e;
-      --nope: #ef4444;
-      --shadow: 0 12px 28px rgba(2, 8, 23, 0.18);
-    }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AthleteMatch – Demo</title>
+<style>
+:root {
+  --bg: #eef3f8;
+  --card: #ffffff;
+  --text: #0f172a;
+  --muted: #475569;
+  --like: #22c55e;
+  --nope: #ef4444;
+  --shadow: 0 12px 28px rgba(2, 8, 23, 0.18);
+}
 
-    * { box-sizing: border-box; }
-    html, body { height: 100%; }
-    body {
-      margin: 0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
-      color: var(--text);
-      background: linear-gradient(180deg, #f7fafc 0%, var(--bg) 100%);
-      display: flex; flex-direction: column;
-      -webkit-tap-highlight-color: transparent;
-      overflow: hidden; /* lock to viewport for tablet */
-    }
+body {
+  margin: 0;
+  font-family: system-ui, -apple-system, Segoe UI, Roboto, Helvetica, Arial, sans-serif;
+  background: linear-gradient(180deg, #f7fafc 0%, var(--bg) 100%);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+}
 
-    /* Top bar */
-    .topbar {
-      display: flex; align-items: center; justify-content: space-between;
-      padding: 14px 16px; background: var(--card); box-shadow: 0 2px 14px rgba(0,0,0,.06);
-      z-index: 10; position: relative;
-    }
-    .brand { font-weight: 800; letter-spacing: .2px; }
-    .iconbtn { border: 0; background: transparent; font-size: 22px; padding: 8px; border-radius: 12px; }
-    .iconbtn:active { background: rgba(2,8,23,.06); }
+/* --- Top bar --- */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 10px 16px;
+  background: var(--card);
+  box-shadow: 0 2px 14px rgba(0,0,0,.06);
+  position: relative;
+  z-index: 10;
+}
+.topbar .profile-pic {
+  width: 40px;
+  height: 40px;
+  border-radius: 999px;
+  object-fit: cover;
+}
+.topbar .welcome {
+  flex: 1;
+  text-align: center;
+  font-weight: 600;
+}
+.topbar .menu-btn {
+  font-size: 28px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
 
-    /* Slide-out menu */
-    .sheet-backdrop {
-      position: fixed; inset: 0; background: rgba(2,8,23,.35);
-      opacity: 0; pointer-events: none; transition: opacity .25s ease;
-    }
-    .sheet { position: fixed; top: 0; right: -320px; width: 300px; max-width: 85vw; height: 100%;
-      background: var(--card); box-shadow: var(--shadow); display: flex; flex-direction: column;
-      transition: right .25s ease; z-index: 30; }
-    .sheet.open { right: 0; }
-    .sheet-backdrop.open { opacity: 1; pointer-events: auto; }
-    .sheet header { padding: 16px; border-bottom: 1px solid #e5e7eb; display:flex; align-items:center; justify-content:space-between; }
-    .sheet h3 { margin: 0; font-size: 18px; }
-    .menu-list { padding: 8px 0; }
-    .menu-item { display:flex; align-items:center; gap: 12px; padding: 14px 16px; text-decoration:none; color: var(--text); }
-    .menu-item:active, .menu-item:hover { background: #f1f5f9; }
-    .menu-item .emoji { width: 28px; text-align:center; }
+/* --- Side Menu --- */
+.side-menu {
+  position: fixed;
+  top: 0;
+  right: -300px;
+  width: 280px;
+  height: 100%;
+  background: var(--card);
+  box-shadow: var(--shadow);
+  transition: right 0.25s ease;
+  display: flex;
+  flex-direction: column;
+  padding-top: 20px;
+  z-index: 20;
+}
+.side-menu.open {
+  right: 0;
+}
+.side-menu header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0 16px;
+}
+.side-menu header h3 {
+  margin: 0;
+}
+.side-menu header button {
+  font-size: 20px;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+.side-menu nav {
+  margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+}
+.side-menu nav a {
+  padding: 12px 16px;
+  text-decoration: none;
+  color: var(--text);
+  font-weight: 500;
+}
+.side-menu nav a:hover {
+  background: #f1f5f9;
+}
 
-    /* Main deck area */
-    .deck { position: relative; flex: 1; display:flex; align-items:center; justify-content:center; padding: 12px; }
-    .card { position:absolute; width: min(92vw, 420px); height: min(72vh, 680px); background: var(--card);
-      border-radius: 22px; box-shadow: var(--shadow); overflow: hidden; user-select: none; touch-action: pan-y; }
-    .card img { width: 100%; height: 52%; object-fit: cover; display:block; }
-    .card .content { padding: 14px 16px 16px; }
-    .card h2 { margin: 0 0 6px; font-size: 22px; }
-    .muted { color: var(--muted); font-size: 14px; }
+/* --- Deck / Card --- */
+.deck {
+  flex: 1;
+  display:flex;
+  align-items:center;
+  justify-content:center;
+  padding: 12px;
+  position: relative;
+}
+.card {
+  position:absolute;
+  width: min(92vw, 400px);
+  height: min(72vh, 600px);
+  background: var(--card);
+  border-radius: 22px;
+  box-shadow: var(--shadow);
+  overflow: hidden;
+  user-select: none;
+  touch-action: pan-y;
+  transition: transform 0.28s ease, opacity 0.28s ease;
+}
+.card img {
+  width: 100%;
+  height: 50%;
+  object-fit: cover;
+  display:block;
+}
+.card .content {
+  padding: 14px 16px 16px;
+}
+.card h2 { margin:0 0 6px; font-size:22px; }
+.muted { color: var(--muted); font-size:14px; }
+.badge { position:absolute; top: 14px; padding:6px 10px; border:3px solid; border-radius:10px; font-weight:800; font-size:14px; letter-spacing:1px; opacity:0; }
+.badge.like { left:14px; color:var(--like); border-color:var(--like); transform:rotate(-12deg); }
+.badge.nope { right:14px; color:var(--nope); border-color:var(--nope); transform:rotate(12deg); }
 
-    /* Peek stack effect for next cards */
-    .card:nth-child(1) { transform: translateY(0) scale(1); }
-    .card:nth-child(2) { transform: translateY(10px) scale(.98); opacity: .95; }
-    .card:nth-child(3) { transform: translateY(20px) scale(.96); opacity: .9; }
-
-    /* Like / Nope badges */
-    .badge { position:absolute; top: 14px; padding: 6px 10px; border: 3px solid; border-radius: 10px; font-weight: 800; font-size: 14px; letter-spacing: 1px; opacity: 0; transform: rotate(-12deg); }
-    .badge.like { left: 14px; color: var(--like); border-color: var(--like); }
-    .badge.nope { right: 14px; color: var(--nope); border-color: var(--nope); transform: rotate(12deg); }
-
-    /* Bottom action bar */
-    .bottombar { display:flex; gap: 28px; justify-content:center; padding: 14px; background: var(--card); box-shadow: 0 -2px 14px rgba(0,0,0,.06); }
-    .fab { width: 68px; height: 68px; border-radius: 999px; border: 0; background: #fff; box-shadow: var(--shadow); font-size: 28px; display:grid; place-items:center; }
-    .fab:active { transform: scale(.96); }
-    .fab.nope { color: var(--nope); }
-    .fab.like { color: var(--like); }
-
-    /* "No more" message */
-    .empty { text-align:center; color: var(--muted); padding: 24px; }
-  </style>
+/* --- Bottom buttons --- */
+.bottombar {
+  display:flex;
+  gap:28px;
+  justify-content:center;
+  padding:14px;
+  background: var(--card);
+  box-shadow: 0 -2px 14px rgba(0,0,0,.06);
+}
+.fab {
+  width: 68px;
+  height: 68px;
+  border-radius: 999px;
+  border: 0;
+  background: #fff;
+  box-shadow: var(--shadow);
+  font-size: 28px;
+  display:grid;
+  place-items:center;
+  cursor: pointer;
+}
+.fab.nope { color: var(--nope); }
+.fab.like { color: var(--like); }
+.empty { text-align:center; color: var(--muted); padding:24px; font-size:18px; }
+</style>
 </head>
 <body>
-  <div class="topbar">
-    <button class="iconbtn" aria-label="Profile">👤</button>
-    <div class="brand">AthleteMatch</div>
-    <button id="menuToggle" class="iconbtn" aria-expanded="false" aria-controls="sheet">☰</button>
-  </div>
 
-  <div class="sheet-backdrop" id="backdrop"></div>
-  <aside class="sheet" id="sheet" aria-hidden="true">
-    <header>
-      <h3>Menu</h3>
-      <button id="closeSheet" class="iconbtn" aria-label="Close">✕</button>
-    </header>
-    <nav class="menu-list">
-      <a href="#" class="menu-item"><span class="emoji">🧑</span><span>Profile</span></a>
-      <a href="#" class="menu-item"><span class="emoji">⚙️</span><span>Account Settings</span></a>
-      <a href="#" class="menu-item"><span class="emoji">⭐</span><span>Featured Programs</span></a>
-      <a href="#" class="menu-item"><span class="emoji">🔍</span><span>Search</span></a>
-    </nav>
-  </aside>
+<!-- Top bar -->
+<div class="topbar">
+  <img src="https://images.unsplash.com/photo-1607746882042-944635dfe10e?auto=format&fit=crop&w=80&q=80" alt="Profile" class="profile-pic">
+  <div class="welcome">Welcome back</div>
+  <button class="menu-btn" id="menuBtn">☰</button>
+</div>
 
-  <main class="deck" id="deck"></main>
+<!-- Side menu -->
+<aside class="side-menu" id="sideMenu">
+  <header>
+    <h3>Menu</h3>
+    <button id="closeMenuBtn">✕</button>
+  </header>
+  <nav>
+    <a href="#">Profile</a>
+    <a href="#">Account Settings</a>
+    <a href="#">Featured Programs</a>
+    <a href="#">Search</a>
+  </nav>
+</aside>
 
-  <div class="bottombar">
-    <button class="fab nope" id="btnNope" aria-label="Nope">✖</button>
-    <button class="fab like" id="btnLike" aria-label="Like">✔</button>
-  </div>
+<!-- Deck -->
+<main class="deck" id="deck"></main>
 
-  <script>
-    // === Data (your updated list) ===
-    const athletes = [
-      {
-        name: "Sam T.",
-        sport: "Rugby",
-        stats: "40-yard dash: 4.6s",
-        bio: "Hard-working winger from Auckland. Looking for opportunities abroad.",
-        img: "https://images.unsplash.com/photo-1544765773-a8dce1f272f6?auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Jess K.",
-        sport: "Track & Field",
-        stats: "100m: 11.2s",
-        bio: "Sprinter aiming to compete internationally. Strong academic background.",
-        img: "https://images.unsplash.com/photo-1516398810565-0cb4310bb8ea?auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Alex R.",
-        sport: "Basketball",
-        stats: "Height: 6'5\"",
-        bio: "Forward with strong rebounding skills and team spirit.",
-        img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Mia L.",
-        sport: "Swimming",
-        stats: "200m freestyle: 2:01",
-        bio: "National-level swimmer, dedicated and disciplined.",
-        img: "https://images.unsplash.com/photo-1611385104263-5a3b94951346?auto=format&fit=crop&w=800&q=80"
-      },
-      {
-        name: "Ethan P.",
-        sport: "Soccer",
-        stats: "Position: Midfielder",
-        bio: "Creative playmaker with strong passing accuracy.",
-        img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=800&q=80"
-      }
-    ];
+<!-- Bottom buttons -->
+<div class="bottombar">
+  <div class="fab nope" id="btnNope">✖</div>
+  <div class="fab like" id="btnLike">✔</div>
+</div>
 
-    const deckEl = document.getElementById('deck');
+<script>
+const athletes = [
+  { name: "Sam T.", sport: "Rugby", stats: "40-yard dash: 4.6s", bio: "Hard-working winger from Auckland. Looking for opportunities abroad.", img: "https://images.unsplash.com/photo-1544765773-a8dce1f272f6?auto=format&fit=crop&w=800&q=80" },
+  { name: "Jess K.", sport: "Track & Field", stats: "100m: 11.2s", bio: "Sprinter aiming to compete internationally. Strong academic background.", img: "https://images.unsplash.com/photo-1516398810565-0cb4310bb8ea?auto=format&fit=crop&w=800&q=80" },
+  { name: "Alex R.", sport: "Basketball", stats: "Height: 6'5\"", bio: "Forward with strong rebounding skills and team spirit.", img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80" },
+  { name: "Mia L.", sport: "Swimming", stats: "200m freestyle: 2:01", bio: "National-level swimmer, dedicated and disciplined.", img: "https://images.unsplash.com/photo-1611385104263-5a3b94951346?auto=format&fit=crop&w=800&q=80" },
+  { name: "Ethan P.", sport: "Soccer", stats: "Position: Midfielder", bio: "Creative playmaker with strong passing accuracy.", img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=800&q=80" }
+];
 
-    // Build the initial deck (keep only top 3 in DOM for perf)
-    let index = 0;
-    function buildDeck() {
-      deckEl.innerHTML = '';
-      for (let i = 0; i < Math.min(3, athletes.length - index); i++) {
-        deckEl.appendChild(createCard(athletes[index + i]));
-      }
-      if (index >= athletes.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'No more matches';
-        deckEl.appendChild(empty);
-      }
-    }
+const deckEl = document.getElementById('deck');
+let index = 0;
 
-    function createCard(data) {
-      const card = document.createElement('div');
-      card.className = 'card';
-      card.innerHTML = `
-        <div class="badge like">LIKE</div>
-        <div class="badge nope">NOPE</div>
-        <img src="${data.img}" alt="${data.name}">
-        <div class="content">
-          <h2>${data.name}</h2>
-          <div class="muted">${data.sport} • ${data.stats}</div>
-          <p style="margin-top:8px; line-height:1.35">${data.bio}</p>
-        </div>
-      `;
+function showCard() {
+  deckEl.innerHTML = '';
+  if (index >= athletes.length) {
+    const empty = document.createElement('div'); empty.className='empty'; empty.textContent='No more matches'; deckEl.appendChild(empty); return;
+  }
+  const card = createCard(athletes[index]);
+  deckEl.appendChild(card);
+}
 
-      // Gesture handling via Pointer Events (works for touch + mouse)
-      let startX = 0, currentX = 0, dragging = false;
-      let pointerId = null;
+function createCard(data) {
+  const card = document.createElement('div');
+  card.className='card';
+  card.innerHTML = `
+    <div class="badge like">LIKE</div>
+    <div class="badge nope">NOPE</div>
+    <img src="${data.img}" alt="${data.name}">
+    <div class="content">
+      <h2>${data.name}</h2>
+      <div class="muted">${data.sport} • ${data.stats}</div>
+      <p style="margin-top:8px; line-height:1.35">${data.bio}</p>
+    </div>
+  `;
+  const likeBadge = card.querySelector('.badge.like');
+  const nopeBadge = card.querySelector('.badge.nope');
+  let startX=0, currentX=0, dragging=false, pointerId=null;
+  card.addEventListener('pointerdown', e=>{pointerId=e.pointerId; startX=e.clientX; currentX=startX; dragging=true; card.setPointerCapture(pointerId);});
+  card.addEventListener('pointermove', e=>{if(!dragging)return; currentX=e.clientX; const dx=currentX-startX; const rot=dx/18; card.style.transform=`translateX(${dx}px) rotate(${rot}deg)`; const t=Math.min(1,Math.abs(dx)/140); likeBadge.style.opacity=dx>0?t:0; nopeBadge.style.opacity=dx<0?t:0;});
+  card.addEventListener('pointerup', finish);
+  card.addEventListener('pointercancel', finish);
+  function finish(){if(!dragging)return; dragging=false; const dx=currentX-startX; if(Math.abs(dx)>120){ swipe(dx>0?1:-1); } else { card.style.transition='transform .25s ease'; card.style.transform=''; likeBadge.style.opacity=0; nopeBadge.style.opacity=0; setTimeout(()=>{card.style.transition='';},250);} try{card.releasePointerCapture(pointerId);}catch(e){}}
+  function swipe(dir){card.style.transform=`translateX(${dir*1200}px) rotate(${dir*28}deg)`; card.style.opacity='0'; setTimeout(()=>{index++; showCard();},220);}
+  card.swipeLeft=()=>swipe(-1); card.swipeRight=()=>swipe(1);
+  return card;
+}
 
-      const likeBadge = card.querySelector('.badge.like');
-      const nopeBadge = card.querySelector('.badge.nope');
+document.getElementById('btnLike').addEventListener('click', ()=>{ const card = deckEl.querySelector('.card'); if(card) card.swipeRight(); });
+document.getElementById('btnNope').addEventListener('click', ()=>{ const card = deckEl.querySelector('.card'); if(card) card.swipeLeft(); });
+showCard();
 
-      const onPointerDown = (e) => {
-        pointerId = e.pointerId;
-        startX = e.clientX;
-        currentX = startX;
-        dragging = true;
-        card.setPointerCapture(pointerId);
-      };
-      const onPointerMove = (e) => {
-        if (!dragging) return;
-        currentX = e.clientX;
-        const dx = currentX - startX;
-        const rot = dx / 18; // tilt
-        card.style.transform = `translateX(${dx}px) rotate(${rot}deg)`;
-        // Badge visibility
-        const t = Math.min(1, Math.abs(dx) / 140);
-        likeBadge.style.opacity = dx > 0 ? t : 0;
-        nopeBadge.style.opacity = dx < 0 ? t : 0;
-      };
-      const onPointerUp = () => {
-        if (!dragging) return;
-        dragging = false;
-        const dx = currentX - startX;
-        // threshold
-        if (Math.abs(dx) > 120) {
-          finishSwipe(card, dx > 0 ? 1 : -1);
-        } else {
-          // reset
-          card.style.transition = 'transform .25s ease';
-          card.style.transform = '';
-          likeBadge.style.opacity = 0; nopeBadge.style.opacity = 0;
-          setTimeout(() => { card.style.transition = ''; }, 250);
-        }
-        try { card.releasePointerCapture(pointerId); } catch (e) {}
-      };
+// --- Menu logic ---
+const menuBtn = document.getElementById('menuBtn');
+const sideMenu = document.getElementById('sideMenu');
+const closeMenuBtn = document.getElementById('closeMenuBtn');
 
-      card.addEventListener('pointerdown', onPointerDown);
-      card.addEventListener('pointermove', onPointerMove);
-      card.addEventListener('pointerup', onPointerUp);
-      card.addEventListener('pointercancel', onPointerUp);
+menuBtn.addEventListener('click', ()=> sideMenu.classList.add('open'));
+closeMenuBtn.addEventListener('click', ()=> sideMenu.classList.remove('open'));
+</script>
 
-      return card;
-    }
-
-    function finishSwipe(card, dir) {
-      // Animate off-screen
-      card.style.transition = 'transform .28s ease, opacity .28s ease';
-      card.style.transform = `translateX(${dir * 1200}px) rotate(${dir * 28}deg)`;
-      card.style.opacity = '0';
-      setTimeout(() => {
-        index++;
-        // Remove the swiped top card
-        if (deckEl.contains(card)) deckEl.removeChild(card);
-        // Add next card to keep 3 in stack
-        const next = index + 2;
-        if (next < athletes.length) deckEl.appendChild(createCard(athletes[next]));
-        // Re-apply peek transforms by reordering DOM (ensure top is first child)
-        normalizeStackOrder();
-      }, 220);
-    }
-
-    function normalizeStackOrder() {
-      // Ensure the top card is the first child so pointer events hit it first
-      const cards = Array.from(deckEl.querySelectorAll('.card'));
-      cards.forEach((c, i) => {
-        c.style.transform = '';
-        c.style.opacity = i === 0 ? '1' : (i === 1 ? '.95' : '.9');
-      });
-      if (cards.length) {
-        // Re-apply the peek effect via CSS nth-child by re-adding in order
-        const frag = document.createDocumentFragment();
-        cards.forEach(c => frag.appendChild(c));
-        deckEl.innerHTML = '';
-        deckEl.appendChild(frag);
-      } else if (index >= athletes.length) {
-        const empty = document.createElement('div');
-        empty.className = 'empty';
-        empty.textContent = 'No more matches';
-        deckEl.appendChild(empty);
-      }
-    }
-
-    // Buttons
-    const btnLike = document.getElementById('btnLike');
-    const btnNope = document.getElementById('btnNope');
-    btnLike.addEventListener('click', () => {
-      const top = deckEl.querySelector('.card');
-      if (top) finishSwipe(top, 1);
-    });
-    btnNope.addEventListener('click', () => {
-      const top = deckEl.querySelector('.card');
-      if (top) finishSwipe(top, -1);
-    });
-
-    // Menu sheet logic (prevents getting "stuck")
-    const sheet = document.getElementById('sheet');
-    const backdrop = document.getElementById('backdrop');
-    const menuToggle = document.getElementById('menuToggle');
-    const closeSheet = document.getElementById('closeSheet');
-
-    function openMenu() {
-      sheet.classList.add('open');
-      backdrop.classList.add('open');
-      sheet.setAttribute('aria-hidden', 'false');
-      menuToggle.setAttribute('aria-expanded', 'true');
-    }
-    function closeMenu() {
-      sheet.classList.remove('open');
-      backdrop.classList.remove('open');
-      sheet.setAttribute('aria-hidden', 'true');
-      menuToggle.setAttribute('aria-expanded', 'false');
-    }
-
-    menuToggle.addEventListener('click', (e) => {
-      const isOpen = sheet.classList.contains('open');
-      isOpen ? closeMenu() : openMenu();
-      e.stopPropagation();
-    });
-    closeSheet.addEventListener('click', closeMenu);
-    backdrop.addEventListener('click', closeMenu);
-    // Close on ESC
-    window.addEventListener('keydown', (e) => { if (e.key === 'Escape') closeMenu(); });
-
-    // Prevent the menu from trapping taps when closed
-    backdrop.style.pointerEvents = 'none';
-    const obs = new MutationObserver(() => {
-      backdrop.style.pointerEvents = backdrop.classList.contains('open') ? 'auto' : 'none';
-    });
-    obs.observe(backdrop, { attributes: true, attributeFilter: ['class'] });
-
-    // Build UI
-    buildDeck();
-  </script>
 </body>
 </html>
