@@ -1,0 +1,179 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Athlete Match</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      padding: 0;
+      background: #f5f5f5;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    header {
+      width: 100%;
+      padding: 15px;
+      background: white;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid #ddd;
+    }
+
+    header h2 {
+      margin: 0;
+      font-size: 18px;
+    }
+
+    .icon {
+      font-size: 24px;
+      cursor: pointer;
+    }
+
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 20px;
+      width: 100%;
+    }
+
+    .card {
+      position: relative;
+      width: 90%;
+      max-width: 350px;
+      height: 480px;
+      background: white;
+      border-radius: 20px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-bottom: 20px;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    .card img {
+      width: 100%;
+      height: 250px;
+      object-fit: cover;
+    }
+
+    .card-content {
+      padding: 15px;
+    }
+
+    .card h3 {
+      margin: 0;
+      font-size: 20px;
+    }
+
+    .card p {
+      font-size: 14px;
+      color: #444;
+      margin: 5px 0;
+    }
+
+    .buttons {
+      display: flex;
+      justify-content: space-around;
+      width: 100%;
+      margin-bottom: 30px;
+    }
+
+    .btn {
+      font-size: 32px;
+      padding: 10px 20px;
+      border-radius: 50%;
+      border: none;
+      cursor: pointer;
+      background: white;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn.like {
+      color: green;
+    }
+
+    .btn.nope {
+      color: red;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div class="icon">👤</div>
+    <h2>Welcome back, Lewis</h2>
+    <div class="icon">☰</div>
+  </header>
+
+  <div class="container">
+    <div id="card-container"></div>
+    <div class="buttons">
+      <button class="btn nope" onclick="nextCard()">❌</button>
+      <button class="btn like" onclick="nextCard()">✅</button>
+    </div>
+  </div>
+
+  <script>
+    const athletes = [
+      {
+        name: "Sam T.",
+        sport: "Rugby",
+        stats: "40-yard dash: 4.6s",
+        bio: "Hard-working winger from Auckland. Looking for opportunities abroad.",
+        img: "https://via.placeholder.com/400x250?text=Rugby+Player"
+      },
+      {
+        name: "Jess K.",
+        sport: "Track & Field",
+        stats: "100m: 11.2s",
+        bio: "Sprinter aiming to compete internationally. Strong academic background.",
+        img: "https://via.placeholder.com/400x250?text=Sprinter"
+      },
+      {
+        name: "Alex R.",
+        sport: "Basketball",
+        stats: "Height: 6'5\"",
+        bio: "Forward with strong rebounding skills and team spirit.",
+        img: "https://via.placeholder.com/400x250?text=Basketball+Player"
+      }
+    ];
+
+    let currentIndex = 0;
+    const cardContainer = document.getElementById("card-container");
+
+    function renderCard(index) {
+      if (index >= athletes.length) {
+        cardContainer.innerHTML = "<p>No more matches</p>";
+        return;
+      }
+      const athlete = athletes[index];
+      cardContainer.innerHTML = `
+        <div class="card">
+          <img src="${athlete.img}" alt="${athlete.name}" />
+          <div class="card-content">
+            <h3>${athlete.name}</h3>
+            <p><strong>Sport:</strong> ${athlete.sport}</p>
+            <p><strong>Stats:</strong> ${athlete.stats}</p>
+            <p>${athlete.bio}</p>
+          </div>
+        </div>
+      `;
+    }
+
+    function nextCard() {
+      currentIndex++;
+      renderCard(currentIndex);
+    }
+
+    // initial load
+    renderCard(currentIndex);
+  </script>
+</body>
+</html>
