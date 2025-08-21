@@ -3,123 +3,91 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Athlete Match</title>
+  <title>Athlete Match – Fancy Demo</title>
   <style>
     body {
-      font-family: Arial, sans-serif;
-      margin: 0;
-      padding: 0;
-      background: #f5f5f5;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
+      margin: 0; padding: 0;
+      background: linear-gradient(135deg, #f0f4f8, #d9e2ec);
+      font-family: 'Segoe UI', sans-serif;
+      height: 100vh;
+      display: flex; flex-direction: column;
     }
-
     header {
-      width: 100%;
-      padding: 15px;
       background: white;
-      display: flex;
-      justify-content: space-between;
-      align-items: center;
-      border-bottom: 1px solid #ddd;
+      padding: 16px;
+      display: flex; justify-content: space-between; align-items: center;
+      box-shadow: 0 2px 10px rgba(0,0,0,0.1);
+      z-index: 2;
     }
-
-    header h2 {
-      margin: 0;
-      font-size: 18px;
-    }
-
-    .icon {
-      font-size: 24px;
-      cursor: pointer;
-    }
-
+    header h2 { margin: 0; font-size: 1.2em; }
     .container {
-      flex: 1;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      margin-top: 20px;
-      width: 100%;
-    }
-
-    .card {
-      position: relative;
-      width: 90%;
-      max-width: 350px;
-      height: 480px;
-      background: white;
-      border-radius: 20px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      margin-bottom: 20px;
-      display: flex;
-      flex-direction: column;
+      flex: 1; position: relative;
+      display: flex; justify-content: center; align-items: center;
       overflow: hidden;
     }
-
+    .card {
+      position: absolute;
+      width: 80%; max-width: 350px;
+      height: 70%;
+      background: white;
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      transition: transform 0.4s cubic-bezier(0.23,1,0.32,1), opacity 0.4s ease;
+      overflow: hidden;
+      display: flex; flex-direction: column;
+    }
     .card img {
-      width: 100%;
-      height: 250px;
+      width: 100%; height: 50%;
       object-fit: cover;
     }
-
     .card-content {
-      padding: 15px;
+      padding: 16px;
     }
-
     .card h3 {
-      margin: 0;
-      font-size: 20px;
+      margin: 0; font-size: 1.4em;
+      color: #102a43;
     }
-
     .card p {
-      font-size: 14px;
-      color: #444;
-      margin: 5px 0;
+      margin: 8px 0; color: #334e68;
+      font-size: 0.95em;
     }
-
     .buttons {
       display: flex;
       justify-content: space-around;
-      width: 100%;
-      margin-bottom: 30px;
-    }
-
-    .btn {
-      font-size: 32px;
-      padding: 10px 20px;
-      border-radius: 50%;
-      border: none;
-      cursor: pointer;
+      padding: 12px 0;
       background: white;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 -2px 10px rgba(0,0,0,0.1);
+      z-index: 2;
     }
-
-    .btn.like {
-      color: green;
+    .btn {
+      font-size: 2.2em;
+      background: white; border: none;
+      width: 60px; height: 60px;
+      border-radius: 50%;
+      box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+      cursor: pointer;
+      display: flex; align-items: center; justify-content: center;
+      transition: transform 0.2s;
     }
-
-    .btn.nope {
-      color: red;
-    }
+    .btn:hover { transform: scale(1.1); }
+    .btn.like { color: #2f855a; }
+    .btn.nope { color: #c53030; }
   </style>
 </head>
 <body>
   <header>
-    <div class="icon">👤</div>
+    <div>👤</div>
     <h2>Welcome back, Lewis</h2>
-    <div class="icon">☰</div>
+    <div>☰</div>
   </header>
-
-  <div class="container">
-    <div id="card-container"></div>
-    <div class="buttons">
-      <button class="btn nope" onclick="nextCard()">❌</button>
-      <button class="btn like" onclick="nextCard()">✅</button>
-    </div>
+  
+  <div class="container" id="card-container"></div>
+  
+  <div class="buttons">
+    <button class="btn nope" onclick="manualSwipe(-1)">❌</button>
+    <button class="btn like" onclick="manualSwipe(1)">✅</button>
   </div>
-
+  
   <script>
     const athletes = [
       {
@@ -127,53 +95,93 @@
         sport: "Rugby",
         stats: "40-yard dash: 4.6s",
         bio: "Hard-working winger from Auckland. Looking for opportunities abroad.",
-        img: "https://via.placeholder.com/400x250?text=Rugby+Player"
+        img: "https://images.unsplash.com/photo-1544765773-a8dce1f272f6?auto=format&fit=crop&w=800&q=80"
       },
       {
         name: "Jess K.",
         sport: "Track & Field",
         stats: "100m: 11.2s",
         bio: "Sprinter aiming to compete internationally. Strong academic background.",
-        img: "https://via.placeholder.com/400x250?text=Sprinter"
+        img: "https://images.unsplash.com/photo-1516398810565-0cb4310bb8ea?auto=format&fit=crop&w=800&q=80"
       },
       {
         name: "Alex R.",
         sport: "Basketball",
         stats: "Height: 6'5\"",
         bio: "Forward with strong rebounding skills and team spirit.",
-        img: "https://via.placeholder.com/400x250?text=Basketball+Player"
+        img: "https://images.unsplash.com/photo-1546519638-68e109498ffc?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Mia L.",
+        sport: "Swimming",
+        stats: "200m freestyle: 2:01",
+        bio: "National-level swimmer, dedicated and disciplined.",
+        img: "https://images.unsplash.com/photo-1611385104263-5a3b94951346?auto=format&fit=crop&w=800&q=80"
+      },
+      {
+        name: "Ethan P.",
+        sport: "Soccer",
+        stats: "Position: Midfielder",
+        bio: "Creative playmaker with strong passing accuracy.",
+        img: "https://images.unsplash.com/photo-1517927033932-b3d18e61fb3a?auto=format&fit=crop&w=800&q=80"
       }
     ];
 
     let currentIndex = 0;
-    const cardContainer = document.getElementById("card-container");
+    const container = document.getElementById('card-container');
 
-    function renderCard(index) {
-      if (index >= athletes.length) {
-        cardContainer.innerHTML = "<p>No more matches</p>";
-        return;
-      }
-      const athlete = athletes[index];
-      cardContainer.innerHTML = `
-        <div class="card">
-          <img src="${athlete.img}" alt="${athlete.name}" />
+    function renderCards() {
+      container.innerHTML = '';
+      for (let i = currentIndex; i < athletes.length; i++) {
+        const athlete = athletes[i];
+        const card = document.createElement('div');
+        card.className = 'card';
+        card.style.zIndex = athletes.length - i;
+        if (i > currentIndex) {
+          card.style.transform = 'scale(0.95) translateY(10px)';
+        }
+        card.innerHTML = `
+          <img src="${athlete.img}" alt="${athlete.name}">
           <div class="card-content">
             <h3>${athlete.name}</h3>
             <p><strong>Sport:</strong> ${athlete.sport}</p>
             <p><strong>Stats:</strong> ${athlete.stats}</p>
             <p>${athlete.bio}</p>
           </div>
-        </div>
-      `;
+        `;
+
+        // Swipe logic
+        let startX=0, currentX=0, dragging=false;
+        card.addEventListener('touchstart', e=>{ dragging=true; startX=e.touches[0].clientX; });
+        card.addEventListener('touchmove', e=>{
+          if(!dragging) return;
+          currentX=e.touches[0].clientX;
+          const diff=currentX - startX;
+          card.style.transform=`translateX(${diff}px) rotate(${diff/20}deg)`;
+        });
+        card.addEventListener('touchend', e=>{
+          dragging=false;
+          const diff=currentX - startX;
+          if (Math.abs(diff)>100) swipeCard(card, diff>0?1:-1);
+          else card.style.transform='';
+        });
+
+        container.appendChild(card);
+      }
     }
 
-    function nextCard() {
-      currentIndex++;
-      renderCard(currentIndex);
+    function swipeCard(card, dir) {
+      card.style.transform=`translateX(${dir*1000}px) rotate(${dir*45}deg)`;
+      card.style.opacity='0';
+      setTimeout(()=>{ currentIndex++; renderCards(); }, 300);
     }
 
-    // initial load
-    renderCard(currentIndex);
+    function manualSwipe(dir) {
+      const top=document.querySelector('.card');
+      if(top) swipeCard(top, dir);
+    }
+
+    renderCards();
   </script>
 </body>
 </html>
